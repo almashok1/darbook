@@ -7,7 +7,10 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kz.adamant.bookstore.App
 import kz.adamant.bookstore.databinding.FragmentHomeBinding
+import kz.adamant.bookstore.states.BooksViewState
 import kz.adamant.bookstore.utils.BindingFragment
+import kz.adamant.bookstore.viewmodels.HomeViewModel
+import kz.adamant.bookstore.viewmodels.HomeViewModelFactory
 
 class HomeFragment: BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate) {
 
@@ -29,8 +32,10 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::in
 
     private fun initVm() {
         val app = requireActivity().application as App
-        val repository = app.booksRepository
-        val factory = HomeViewModelFactory(repository)
+        val getAllBooksUseCase = app.getAllBooksUseCase
+        val factory = HomeViewModelFactory(
+                getAllBooksUseCase = getAllBooksUseCase
+        )
 
         viewModel = ViewModelProvider(this, factory)
             .get(HomeViewModel::class.java)
@@ -45,7 +50,18 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::in
 
     private fun observeBooks() {
         viewModel.allBooks.observe(viewLifecycleOwner) {
-            adapter.setItems(it)
+            when(it) {
+                is BooksViewState.Loaded -> adapter.setItems(it.data).also { hideProgressBar() }
+                is BooksViewState.Loading -> showProgressBar()
+            }
         }
+    }
+
+    private fun showProgressBar() {
+        binding.progressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar() {
+        binding.progressBar.visibility = View.INVISIBLE
     }
 }

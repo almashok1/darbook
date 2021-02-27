@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import kz.adamant.bookstore.R
 import kz.adamant.bookstore.databinding.BookItemBinding
-import kz.adamant.bookstore.models.Book
+import kz.adamant.domain.models.Book
 
 class BooksListAdapter: ListAdapter<Book, BooksListAdapter.BookViewHolder>(WORDS_COMPARATOR) {
 
@@ -40,15 +40,17 @@ class BooksListAdapter: ListAdapter<Book, BooksListAdapter.BookViewHolder>(WORDS
     class BookViewHolder(private val binding: BookItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(book: Book) {
             binding.run {
-                bookName.text = book.name
-                if (book.imageUrl != null)
-                    bookImage.load(book.imageUrl) {
-                        crossfade(true)
-                        placeholder(R.drawable.ic_image)
-                        error(R.drawable.ic_no_image)
-                    }
-                else
-                    bookImage.setImageDrawable(ContextCompat.getDrawable(binding.root.context, R.drawable.ic_image))
+                bookName.text = book.title
+                bookImage.setImageDrawable(ContextCompat.getDrawable(binding.root.context, R.drawable.ic_image))
+
+//                if (book.imageUrl != null)
+//                    bookImage.load(book.imageUrl) {
+//                        crossfade(true)
+//                        placeholder(R.drawable.ic_image)
+//                        error(R.drawable.ic_no_image)
+//                    }
+//                else
+//                    bookImage.setImageDrawable(ContextCompat.getDrawable(binding.root.context, R.drawable.ic_image))
             }
         }
     }
@@ -61,7 +63,7 @@ class BooksListAdapter: ListAdapter<Book, BooksListAdapter.BookViewHolder>(WORDS
             }
 
             override fun areContentsTheSame(oldItem: Book, newItem: Book): Boolean {
-                return oldItem.name == newItem.name
+                return oldItem.title == newItem.title
             }
         }
     }
