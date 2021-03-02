@@ -1,7 +1,5 @@
 package kz.adamant.data.mappers
 
-import com.google.gson.annotations.SerializedName
-import kz.adamant.data.common.toDate
 import kz.adamant.data.local.models.BookEntity
 import kz.adamant.domain.models.Book
 
@@ -11,7 +9,9 @@ internal fun BookEntity.toDomain(): Book {
         isbn = isbn,
         title = title,
         author = author,
+        image = image,
         publishedDate = publishedDate,
+        genreId = genreId,
         createdAt = createdAt,
         updatedAt = updatedAt
     )

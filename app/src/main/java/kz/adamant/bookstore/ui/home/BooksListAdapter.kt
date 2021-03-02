@@ -7,7 +7,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
 import kz.adamant.bookstore.R
 import kz.adamant.bookstore.databinding.BookItemBinding
 import kz.adamant.domain.models.Book

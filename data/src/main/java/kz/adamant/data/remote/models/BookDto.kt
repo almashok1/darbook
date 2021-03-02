@@ -6,8 +6,11 @@ data class BookDto(
     val isbn: String,
     val title: String,
     val author: String,
+    val image: String?,
     @SerializedName("publish_date")
-    val publishedDate: String,
+    val publishedDate: String?,
+    @SerializedName("genre_id")
+    val genreId: String?,
     val createdAt: String,
     val updatedAt: String
 )

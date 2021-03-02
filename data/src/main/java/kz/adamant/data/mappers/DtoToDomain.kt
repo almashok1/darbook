@@ -9,7 +9,9 @@ internal fun BookDto.toDomain(): Book {
         isbn = isbn,
         title = title,
         author = author,
+        image = image,
         publishedDate = publishedDate,
+        genreId = genreId,
         createdAt = createdAt,
         updatedAt = updatedAt
     )
