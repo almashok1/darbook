@@ -5,12 +5,16 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import kz.adamant.data.local.dao.BooksDao
+import kz.adamant.data.local.dao.GenresDao
 import kz.adamant.data.local.models.BookEntity
+import kz.adamant.data.local.models.GenreEntity
 
-@Database(entities = arrayOf(BookEntity::class), version = 1, exportSchema = false)
+@Database(entities = [BookEntity::class, GenreEntity::class], version = 1, exportSchema = false)
 abstract class BookDatabase : RoomDatabase() {
 
     abstract fun booksDao(): BooksDao
+
+    abstract fun genresDao(): GenresDao
 
     companion object {
 

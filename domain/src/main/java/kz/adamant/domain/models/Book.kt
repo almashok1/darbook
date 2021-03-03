@@ -5,9 +5,9 @@ data class Book (
     val isbn: String,
     val title: String,
     val author: String,
-    val image: String?,
-    val publishedDate: String?,
-    val genreId: String?,
+    val image: String? = null,
+    val publishedDate: String,
+    val genreId: Int? = null,
     val createdAt: String,
     val updatedAt: String
 )

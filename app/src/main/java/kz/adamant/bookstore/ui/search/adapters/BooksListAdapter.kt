@@ -1,4 +1,4 @@
-package kz.adamant.bookstore.ui.home
+package kz.adamant.bookstore.ui.search.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,9 +7,12 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import kz.adamant.bookstore.R
 import kz.adamant.bookstore.databinding.BookItemBinding
 import kz.adamant.domain.models.Book
+
+const val mockBookUrl = "https://s.f.kz/prod/884/883650_1000.jpg"
 
 class BooksListAdapter: ListAdapter<Book, BooksListAdapter.BookViewHolder>(WORDS_COMPARATOR) {
 
@@ -39,17 +42,15 @@ class BooksListAdapter: ListAdapter<Book, BooksListAdapter.BookViewHolder>(WORDS
     class BookViewHolder(private val binding: BookItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(book: Book) {
             binding.run {
-                bookName.text = book.title
+                bookTitle.text = book.title
+                bookAuthor.text = book.author
                 bookImage.setImageDrawable(ContextCompat.getDrawable(binding.root.context, R.drawable.ic_image))
 
-//                if (book.imageUrl != null)
-//                    bookImage.load(book.imageUrl) {
-//                        crossfade(true)
-//                        placeholder(R.drawable.ic_image)
-//                        error(R.drawable.ic_no_image)
-//                    }
-//                else
-//                    bookImage.setImageDrawable(ContextCompat.getDrawable(binding.root.context, R.drawable.ic_image))
+                bookImage.load(book.image ?: mockBookUrl) {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_image)
+                    error(R.drawable.ic_no_image)
+                }
             }
         }
     }

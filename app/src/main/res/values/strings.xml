@@ -7,4 +7,6 @@
     <string name="profile">Profile</string>
     <string name="profile_fragment">PROFILE FRAGMENT</string>
     <string name="search_fragment">SEARCH FRAGMENT</string>
+    <string name="filter">Filter</string>
+    <string name="apply">Apply</string>
 </resources>
