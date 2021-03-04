@@ -1,5 +1,6 @@
 package kz.adamant.bookstore
 
+import android.annotation.SuppressLint
 import android.app.Application
 import kz.adamant.data.local.BookDatabase
 import kz.adamant.data.remote.RetrofitBuilder
@@ -30,4 +31,26 @@ class App: Application() {
     val getAllBooksUseCase by lazy { GetAllBooksUseCase(booksRepository) }
 
     val getAllGenresUseCase by lazy { GetAllGenresUseCase(booksRepository) }
+
+
+    @SuppressLint("MissingPermission")
+    override fun onCreate() {
+        super.onCreate()
+//        val connectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+//        connectivityManager?.registerDefaultNetworkCallback(object :
+//            ConnectivityManager.NetworkCallback() {
+//            override fun onAvailable(network: Network) {
+//                NetworkConnectivity.isNetworkAvailable = true
+//                super.onAvailable(network)
+//                Log.d("TAG", "onAvailable: true")
+//            }
+//
+//            override fun onLost(network: Network) {
+//                NetworkConnectivity.isNetworkAvailable = false
+//                super.onLost(network)
+//                Log.d("TAG", "onLost: false")
+//            }
+//        })
+
+    }
 }

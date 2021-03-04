@@ -17,6 +17,9 @@ interface BooksDao {
     @Query("SELECT * FROM books_table WHERE genreId IN (:genres)")
     fun filterBooksByGenresId(genres: List<Int>): Flow<List<BookEntity>>
 
+    @Query("SELECT * FROM books_table WHERE genreId IN (:genres) AND LOWER(title) LIKE LOWER(:query)")
+    fun searchBooksWithFilter(query: String, genres: List<Int>): Flow<List<BookEntity>>
+
     @Insert
     suspend fun insertBooks(books: List<BookEntity>)
 

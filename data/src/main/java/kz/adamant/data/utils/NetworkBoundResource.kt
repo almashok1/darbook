@@ -1,33 +1,38 @@
 package kz.adamant.data.utils
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kz.adamant.domain.models.Resource
 
+@ExperimentalCoroutinesApi
 suspend inline fun <ResultType, RequestType> networkBoundResource(
     crossinline query: suspend () -> Flow<ResultType>,
-    crossinline fetch: suspend () -> RequestType,
+    crossinline fetch: suspend () -> Flow<RequestType>,
     crossinline saveFetchResult: suspend (RequestType) -> Unit,
-    crossinline onFetchFailed: (Throwable) -> Unit = { },
-    crossinline shouldFetch: (ResultType) -> Boolean = { true }
-) = flow {
-    emit(Resource.Loading(null))
+    crossinline shouldFetch: (ResultType) -> Boolean = { true },
+    crossinline onFetchSuccess: () -> Unit = { },
+    crossinline onFetchFailed: (Throwable) -> Unit = { }
+) = channelFlow {
     val data = query().first()
 
-    val flow: Flow<Resource<ResultType>> =
-        if (shouldFetch(data)) {
-            emit(Resource.Loading(data))
-
-            try {
-                saveFetchResult(fetch())
-                query().map { Resource.Success(it) }
-            } catch (throwable: Throwable) {
-                onFetchFailed(throwable)
-                query().map { Resource.Error(throwable.localizedMessage ?: "") }
-            }
-        } else {
-            query().map { Resource.Success(it) }
+    if (shouldFetch(data)) {
+        val loading = launch {
+            query().collect { send(Resource.Loading(it)) }
         }
 
-    emitAll(flow)
+        try {
+            fetch().collect { saveFetchResult(it) }
+            onFetchSuccess()
+            loading.cancel()
+            query().collect { send(Resource.Success(it)) }
+        } catch (t: Throwable) {
+            onFetchFailed(t)
+            loading.cancel()
+            query().collect { send(Resource.Error(t, it)) }
+        }
+    } else {
+        query().collect { send(Resource.Success(it)) }
+    }
 }.flowOn(Dispatchers.IO)

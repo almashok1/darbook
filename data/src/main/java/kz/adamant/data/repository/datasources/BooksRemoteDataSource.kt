@@ -1,8 +1,5 @@
 package kz.adamant.data.repository.datasources
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
@@ -16,12 +13,6 @@ class BooksRemoteDataSource(
    private val apiService: BooksApiService
 ): BooksDataSource {
     override suspend fun getAllBooks(): Flow<List<Book>> {
-//        val booksJob = CoroutineScope(Dispatchers.IO).async { apiService.allBooks() }
-//        val genresJob = CoroutineScope(Dispatchers.IO).async { apiService.allGenres() }
-//
-//        val responseBooks = booksJob.await()
-//        val responseGenres = genresJob.await()
-
         val responseBooks = apiService.allBooks()
 
         return if (responseBooks.isSuccessful) {

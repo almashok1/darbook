@@ -1,6 +1,7 @@
 package kz.adamant.bookstore.viewmodels
 
 import androidx.lifecycle.*
+import kotlinx.coroutines.flow.onCompletion
 import kz.adamant.domain.models.Book
 import kz.adamant.domain.models.Genre
 import kz.adamant.domain.models.Resource
@@ -15,22 +16,30 @@ class SearchViewModel(
     private var _allBooks: LiveData<Resource<List<Book>>> = MutableLiveData()
     private var _genres: LiveData<Resource<List<Genre>>> = MutableLiveData()
 
+
     private val _selectedGenres = MutableLiveData<List<Genre>>()
 
     init {
         _allBooks = Transformations.switchMap(DoubleTrigger(_query, _selectedGenres)) {
             launchOnViewModelScope {
-                getAllBooksUseCase(getSearchPattern(it.first), it.second).asLiveData()
+                getAllBooksUseCase(getSearchPattern(it.first), it.second, shouldFetchBooks)
+                    .onCompletion { shouldFetchBooks = false }
+                    .asLiveData()
             }
         }
         _genres = launchOnViewModelScope {
-            getAllGenresUseCase().asLiveData()
+            getAllGenresUseCase(shouldFetchGenres)
+                .onCompletion { shouldFetchGenres = false }
+                .asLiveData()
         }
     }
 
     val allBooks get() = _allBooks
     val genres get() = _genres
     val query get() = _query
+
+    var shouldFetchGenres = true
+    var shouldFetchBooks = true
 
     private fun getSearchPattern(query: String?) = if (query != null) "%$query%" else null
 

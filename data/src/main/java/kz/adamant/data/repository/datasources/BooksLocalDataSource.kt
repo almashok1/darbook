@@ -42,6 +42,12 @@ class BooksLocalDataSource(
         }
     }
 
+    fun getBooksWithQueryAndFilter(query: String, selectedGenres: List<Int>): Flow<List<Book>> {
+        return booksDao.searchBooksWithFilter(query, selectedGenres).flatMapConcat {
+            flowOf(it.map { bookEntity ->  bookEntity.toDomain() })
+        }
+    }
+
     suspend fun resetBooksTable() {
         booksDao.resetTable()
     }

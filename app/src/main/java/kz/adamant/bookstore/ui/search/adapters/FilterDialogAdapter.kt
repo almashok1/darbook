@@ -77,7 +77,7 @@ class FilterDialogAdapter(): ListAdapter<Genre, FilterDialogAdapter.ViewHolder>(
             }
 
             override fun areContentsTheSame(oldItem: Genre, newItem: Genre): Boolean {
-                return oldItem.title == newItem.title
+                return oldItem.id == newItem.id
             }
         }
     }

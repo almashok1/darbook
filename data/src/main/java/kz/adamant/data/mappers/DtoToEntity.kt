@@ -1,7 +1,9 @@
 package kz.adamant.data.mappers
 
-import kz.adamant.data.local.models.*
-import kz.adamant.data.remote.models.*
+import kz.adamant.data.local.models.BookEntity
+import kz.adamant.data.local.models.GenreEntity
+import kz.adamant.data.remote.models.BookDto
+import kz.adamant.data.remote.models.GenreDto
 
 internal fun BookDto.toEntity(): BookEntity {
     return BookEntity(

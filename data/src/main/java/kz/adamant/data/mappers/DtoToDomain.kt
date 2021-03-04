@@ -1,7 +1,9 @@
 package kz.adamant.data.mappers
 
-import kz.adamant.data.remote.models.*
-import kz.adamant.domain.models.*
+import kz.adamant.data.remote.models.BookDto
+import kz.adamant.data.remote.models.GenreDto
+import kz.adamant.domain.models.Book
+import kz.adamant.domain.models.Genre
 
 internal fun BookDto.toDomain(): Book {
     return Book(

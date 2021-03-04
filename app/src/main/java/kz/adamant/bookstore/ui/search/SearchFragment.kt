@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import kz.adamant.bookstore.App
@@ -15,6 +14,7 @@ import kz.adamant.bookstore.R
 import kz.adamant.bookstore.databinding.FragmentSearchBinding
 import kz.adamant.bookstore.ui.search.adapters.BooksListAdapter
 import kz.adamant.bookstore.utils.BindingFragment
+import kz.adamant.bookstore.utils.viewModel
 import kz.adamant.bookstore.viewmodels.SearchViewModel
 import kz.adamant.bookstore.viewmodels.SearchViewModelFactory
 import kz.adamant.domain.models.Book
@@ -67,9 +67,7 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
             getAllBooksUseCase = app.getAllBooksUseCase,
             getAllGenresUseCase = app.getAllGenresUseCase
         )
-
-        viewModel = ViewModelProvider(requireActivity(), factory)
-            .get(SearchViewModel::class.java)
+        viewModel = navController.viewModel(R.id.nav_graph, factory)
     }
 
     private fun setUpRecyclerView() {
@@ -88,34 +86,36 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
     private fun observeBooks() {
         viewModel.allBooks.observe(viewLifecycleOwner) { result ->
             when(result) {
-                is Resource.Success -> setItems(result.data).also { hideProgressBar() }
+                is Resource.Success -> {
+                    setItems(result.data).also { hideProgressBar() }
+                }
                 is Resource.Loading -> {
                     showProgressBar()
                     if (result.localData != null) {
                         setItems(result.localData!!)
                     }
                 }
-                is Resource.Error -> hideProgressBar().also{ showErrorSnackbar(result.message) }
+                is Resource.Error -> {
+                    hideProgressBar()
+                    showErrorSnackbar(result.throwable.localizedMessage ?: "")
+                    result.data?.let { setItems(it) }
+                }
                 else -> {}
             }
         }
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        if (query != null) {
-            searchQuery(query)
-        }
+        searchQuery(query)
         return true
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        if (newText != null) {
-            searchQuery(newText)
-        }
+        searchQuery(newText)
         return true
     }
 
-    private fun searchQuery(query: String) {
+    private fun searchQuery(query: String?) {
         viewModel.query.value = query
     }
 
@@ -136,7 +136,7 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
     }
 
     private fun showErrorSnackbar(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT)
             .setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.error))
             .show()
     }
