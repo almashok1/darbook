@@ -8,6 +8,7 @@ import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import kz.adamant.bookstore.App
 import kz.adamant.bookstore.R
@@ -21,7 +22,7 @@ import kz.adamant.domain.models.Book
 import kz.adamant.domain.models.Resource
 
 class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBinding::inflate),
-    SearchView.OnQueryTextListener {
+    SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
     private lateinit var viewModel: SearchViewModel
 
     private lateinit var adapter: BooksListAdapter
@@ -36,6 +37,7 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
         setHasOptionsMenu(true)
         initVm()
         setUpRecyclerView()
+        setUpSwipeRefresh()
         setUpFabFilter()
         observeBooks()
     }
@@ -77,6 +79,10 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
         }
     }
 
+    private fun setUpSwipeRefresh() {
+        binding.swipeRefreshBooks.setOnRefreshListener(this)
+    }
+
     private fun setUpFabFilter() {
         binding.fabFilter.setOnClickListener {
             navController.navigate(R.id.action_searchFragment_to_filterBottomSheet)
@@ -85,24 +91,27 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
 
     private fun observeBooks() {
         viewModel.allBooks.observe(viewLifecycleOwner) { result ->
+            result.data?.let { setItems(it) }
             when(result) {
                 is Resource.Success -> {
-                    setItems(result.data).also { hideProgressBar() }
+                    setRefreshing(false)
+                    hideProgressBar()
                 }
                 is Resource.Loading -> {
                     showProgressBar()
-                    if (result.localData != null) {
-                        setItems(result.localData!!)
-                    }
                 }
                 is Resource.Error -> {
                     hideProgressBar()
+                    setRefreshing(false)
                     showErrorSnackbar(result.throwable.localizedMessage ?: "")
-                    result.data?.let { setItems(it) }
                 }
                 else -> {}
             }
         }
+    }
+
+    override fun onRefresh() {
+        viewModel.setForceRefresh()
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
@@ -122,6 +131,13 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
     private fun showProgressBar() {
         binding.progressBar.apply {
             show()
+        }
+    }
+
+    private fun setRefreshing(value: Boolean) {
+        binding.run {
+            if (swipeRefreshBooks.isRefreshing != value)
+                swipeRefreshBooks.isRefreshing = value
         }
     }
 

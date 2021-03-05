@@ -49,21 +49,17 @@ class FilterBottomSheet: BottomSheetDialogFragment() {
     }
 
     private fun observeVm() {
-        viewModel.genres.observe(viewLifecycleOwner) {
-            when(it) {
+        viewModel.genres.observe(viewLifecycleOwner) { result ->
+            result.data?.let { adapter.setItems(it) }
+            when(result) {
                 is Resource.Error -> {
                     binding.progressBar.hide()
-                    it.data?.let { items -> adapter.setItems(items) }
                 }
                 is Resource.Loading -> {
-                    if (it.localData == null)
-                        binding.progressBar.show()
-                    else {
-                        adapter.setItems(it.localData!!).also { binding.progressBar.hide() }
-                    }
+                    binding.progressBar.hide()
                 }
                 is Resource.Success -> {
-                    adapter.setItems(it.data).also { binding.progressBar.hide() }
+                    binding.progressBar.hide()
                 }
                 else -> {}
             }
