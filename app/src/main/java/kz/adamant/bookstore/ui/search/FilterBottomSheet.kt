@@ -50,7 +50,7 @@ class FilterBottomSheet: BottomSheetDialogFragment() {
 
     private fun observeVm() {
         viewModel.genres.observe(viewLifecycleOwner) { result ->
-            result.data?.let { adapter.setItems(it) }
+//            result.data?.let { adapter.setItems(it) }
             when(result) {
                 is Resource.Error -> {
                     binding.progressBar.hide()
@@ -59,6 +59,7 @@ class FilterBottomSheet: BottomSheetDialogFragment() {
                     binding.progressBar.hide()
                 }
                 is Resource.Success -> {
+                    result.data?.let { adapter.setItems(it) }
                     binding.progressBar.hide()
                 }
                 else -> {}

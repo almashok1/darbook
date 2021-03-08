@@ -1,7 +1,9 @@
 package kz.adamant.bookstore.viewmodels
 
 import androidx.lifecycle.*
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.launch
 import kz.adamant.domain.models.Book
 import kz.adamant.domain.models.Genre
 import kz.adamant.domain.models.Resource
@@ -20,17 +22,19 @@ class SearchViewModel(
     private val _forceRefresh = MutableLiveData<Boolean>()
 
     init {
-        _allBooks = Transformations.switchMap(TripleTrigger(_query, _selectedGenres, _forceRefresh)) {
-            launchOnViewModelScope {
-                getAllBooksUseCase(getSearchPattern(it.first), it.second, shouldFetchBooks || it.third ?: false)
-                    .onCompletion { doNotFetchBooks() }
-                    .asLiveData()
-            }
-        }
-        _genres = launchOnViewModelScope {
-            getAllGenresUseCase(shouldFetchGenres)
+
+        viewModelScope.launch {
+            val genresDef = async { getAllGenresUseCase(shouldFetchGenres)
                 .onCompletion { doNotFetchGenres()}
-                .asLiveData()
+                .asLiveData() }
+            _genres = genresDef.await()
+            _allBooks = Transformations.switchMap(TripleTrigger(_query, _selectedGenres, _forceRefresh)) {
+                launchOnViewModelScope {
+                    getAllBooksUseCase(getSearchPattern(it.first), it.second, shouldFetchBooks || it.third ?: false)
+                        .onCompletion { doNotFetchBooks() }
+                        .asLiveData()
+                }
+            }
         }
     }
 

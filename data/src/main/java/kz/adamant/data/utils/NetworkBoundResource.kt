@@ -7,8 +7,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kz.adamant.domain.models.Resource
 
-const val TIMEOUT_DURATION = 10000L
-
 @ExperimentalCoroutinesApi
 suspend inline fun <ResultType, RequestType> networkBoundResource(
     crossinline query: suspend () -> Flow<ResultType>,
@@ -25,12 +23,10 @@ suspend inline fun <ResultType, RequestType> networkBoundResource(
             query().collect { send(Resource.Loading(it)) }
         }
         try {
-            withTimeout(TIMEOUT_DURATION) {
-                fetch().collect { saveFetchResult(it) }
-                onFetchSuccess()
-                loading.cancel()
-                query().collect { send(Resource.Success(it)) }
-            }
+            fetch().collect { saveFetchResult(it) }
+            onFetchSuccess()
+            loading.cancel()
+            query().collect { send(Resource.Success(it)) }
         } catch (t: Throwable) {
             onFetchFailed(t)
             loading.cancel()
