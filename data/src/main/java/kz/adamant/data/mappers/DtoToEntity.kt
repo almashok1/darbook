@@ -12,10 +12,10 @@ internal fun BookDto.toEntity(): BookEntity {
         title = title,
         author = author,
         image = image,
-        publishedDate = publishedDate,
+        publishedDate = publishedDate?.toLong(),
         genreId = genreId,
-        createdAt = createdAt,
-        updatedAt = updatedAt
+        createdAt = createdAt?.toLong(),
+        updatedAt = updatedAt?.toLong()
     )
 }
 
@@ -25,7 +25,7 @@ internal fun GenreDto.toEntity(): GenreEntity {
         title = title,
         sort = sort,
         enabled = enabled,
-        createdAt = createdAt,
-        updatedAt = updatedAt
+        createdAt = createdAt?.toLong(),
+        updatedAt = updatedAt?.toLong()
     )
 }

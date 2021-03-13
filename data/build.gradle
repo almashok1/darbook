@@ -43,8 +43,8 @@ dependencies {
     testImplementation "androidx.room:room-testing:$room_version"
 
     api "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.google.code.gson:gson:$gson_version"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    api "com.google.code.gson:gson:$gson_version"
+    api "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
 
     testImplementation 'junit:junit:4.+'

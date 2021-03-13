@@ -10,6 +10,6 @@ data class GenreEntity(
     val title: String,
     val sort: Int,
     val enabled: Boolean,
-    val createdAt: String,
-    val updatedAt: String
+    val createdAt: Long? = null,
+    val updatedAt: Long? = null
 )

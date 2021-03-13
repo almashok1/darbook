@@ -1,13 +1,16 @@
 package kz.adamant.data.repository
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
+import kz.adamant.data.mappers.toDomain
 import kz.adamant.data.mappers.toEntity
 import kz.adamant.data.repository.datasources.BooksLocalDataSource
 import kz.adamant.data.utils.networkBoundResource
 import kz.adamant.domain.models.Book
 import kz.adamant.domain.models.Genre
+import kz.adamant.domain.models.ReadingBook
 import kz.adamant.domain.models.Resource
 import kz.adamant.domain.repository.BooksRepository
 
@@ -22,7 +25,7 @@ class BooksRepositoryImpl(
                     query = { localDataSource.getAllBooks() },
                     fetch = { remoteDataSource.getAllBooks() },
                     saveFetchResult = { items -> saveBooksToDatabase(items) },
-                    shouldFetch = {items -> shouldFetchFromNetwork}
+                    shouldFetch = {items -> items.isEmpty() || shouldFetchFromNetwork}
                 )
             else
                 getBooksWithFilteredGenresId(selectedGenres)
@@ -37,7 +40,33 @@ class BooksRepositoryImpl(
             query = { localDataSource.getAllGenres() },
             fetch = { remoteDataSource.getAllGenres() },
             saveFetchResult = { items -> saveGenresToDatabase(items) },
-            shouldFetch = { genres -> shouldFetchFromNetwork }
+            shouldFetch = { genres -> genres.isEmpty() || shouldFetchFromNetwork }
+        )
+    }
+
+    override suspend fun getAllReadingBooks(
+        shouldFetchFromNetwork: Boolean,
+        fetchTopN: Int?
+    ): Flow<Resource<List<ReadingBook>>> {
+        return networkBoundResource(
+            query = { localDataSource.getAllReadingBooks(fetchTopN) },
+            fetch = { remoteDataSource.getAllReadingBooks() },
+            saveFetchResult = { items -> saveReadingBooksToDatabase(items) },
+            shouldFetch = { items -> shouldFetchFromNetwork },
+            onFetchFailed = { t -> Log.d("TAG", "getAllReadingBooks: $t") }
+        )
+    }
+
+    override suspend fun getAllBooksNewlyAdded(
+        shouldFetchFromNetwork: Boolean,
+        fetchTopN: Int?
+    ): Flow<Resource<List<Book>>> {
+        return networkBoundResource(
+            query = { localDataSource.getAllBooksNewlyAdded(fetchTopN) },
+            fetch = { remoteDataSource.getAllBooksNewlyAdded() },
+            saveFetchResult = { items -> saveBooksToDatabase(items) },
+            shouldFetch = { items -> shouldFetchFromNetwork },
+            onFetchFailed = { t -> Log.d("TAG", "getAllBooksNewlyAdded: $t") }
         )
     }
 
@@ -69,5 +98,16 @@ class BooksRepositoryImpl(
         val local = localDataSource as BooksLocalDataSource
         local.resetGenresTable()
         local.saveAllGenres(genres.map {genresDto -> genresDto.toEntity()})
+    }
+
+    private suspend fun saveReadingBooksToDatabase(readingBooks: List<ReadingBook>) {
+        val local = localDataSource as BooksLocalDataSource
+        local.resetReadingTable()
+        local.saveAllReadingEntity(
+            readingBooks.map {
+                it.book?.let { book -> local.updateOrInsertBook(book.toEntity()) }
+                it.toDomain()
+            }
+        )
     }
 }

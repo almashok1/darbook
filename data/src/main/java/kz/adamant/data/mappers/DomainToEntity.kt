@@ -2,8 +2,12 @@ package kz.adamant.data.mappers
 
 import kz.adamant.data.local.models.BookEntity
 import kz.adamant.data.local.models.GenreEntity
+import kz.adamant.data.local.models.ReadingBookEntity
+import kz.adamant.data.local.models.ReadingEntity
+import kz.adamant.data.utils.toDateLong
 import kz.adamant.domain.models.Book
 import kz.adamant.domain.models.Genre
+import kz.adamant.domain.models.ReadingBook
 
 internal fun Book.toEntity(): BookEntity {
     return BookEntity(
@@ -12,10 +16,10 @@ internal fun Book.toEntity(): BookEntity {
         title = title,
         author = author,
         image = image,
-        publishedDate = publishedDate,
+        publishedDate = publishedDate?.time,
         genreId = genreId,
-        createdAt = createdAt,
-        updatedAt = updatedAt
+        createdAt = createdAt?.time,
+        updatedAt = updatedAt?.time
     )
 }
 
@@ -25,7 +29,22 @@ internal fun Genre.toEntity(): GenreEntity {
         title = title,
         sort = sort,
         enabled = enabled,
-        createdAt = createdAt,
-        updatedAt = updatedAt
+        createdAt = createdAt?.time,
+        updatedAt = updatedAt?.time,
+    )
+}
+
+
+internal fun ReadingBook.toDomain(): ReadingEntity {
+    return ReadingEntity(
+        readingId = id,
+        userId = userId,
+        userContact = userContact,
+        userName = userName,
+        bookId = bookId,
+        startDate = startDate?.time,
+        endDate = endDate?.time,
+        createdAt = createdAt?.time,
+        updatedAt = updatedAt?.time,
     )
 }

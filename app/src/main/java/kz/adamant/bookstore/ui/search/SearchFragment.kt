@@ -8,22 +8,21 @@ import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
-import kz.adamant.bookstore.App
 import kz.adamant.bookstore.R
 import kz.adamant.bookstore.databinding.FragmentSearchBinding
 import kz.adamant.bookstore.ui.search.adapters.BooksListAdapter
 import kz.adamant.bookstore.utils.BindingFragment
-import kz.adamant.bookstore.utils.viewModel
+import kz.adamant.bookstore.utils.sharedGraphViewModel
 import kz.adamant.bookstore.viewmodels.SearchViewModel
-import kz.adamant.bookstore.viewmodels.SearchViewModelFactory
 import kz.adamant.domain.models.Book
 import kz.adamant.domain.models.Resource
 
 class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBinding::inflate),
     SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel by sharedGraphViewModel<SearchViewModel>(R.id.nav_graph)
 
     private lateinit var adapter: BooksListAdapter
 
@@ -35,7 +34,6 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        initVm()
         setUpRecyclerView()
         setUpSwipeRefresh()
         setUpFabFilter()
@@ -62,19 +60,9 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
         searchView.setOnQueryTextListener(this)
     }
 
-
-    private fun initVm() {
-        val app = requireActivity().application as App
-        val factory = SearchViewModelFactory(
-            getAllBooksUseCase = app.getAllBooksUseCase,
-            getAllGenresUseCase = app.getAllGenresUseCase
-        )
-        viewModel = navController.viewModel(R.id.nav_graph, factory)
-    }
-
     private fun setUpRecyclerView() {
         binding.run {
-            bookRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+            bookRecyclerView.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             bookRecyclerView.adapter = adapter
         }
     }
@@ -149,11 +137,5 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
 
     private fun setItems(data: List<Book>) {
         adapter.setItems(data)
-    }
-
-    private fun showErrorSnackbar(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT)
-            .setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.error))
-            .show()
     }
 }

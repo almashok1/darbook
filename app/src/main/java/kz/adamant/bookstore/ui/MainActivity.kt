@@ -8,6 +8,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kz.adamant.bookstore.R
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var bottomNavigationView: BottomNavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -20,8 +23,8 @@ class MainActivity : AppCompatActivity() {
                 supportFragmentManager.findFragmentById(R.id.navHostFragmentContainer) as NavHostFragment
         val navController = navHostFragment.navController
 
-        val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-        bottomNavigation.setupWithNavController(navController)
+        bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNavigationView.setupWithNavController(navController)
 //        bottomNavigation.setOnNavigationItemSelectedListener {
 //            if (!navController.popBackStack(it.itemId, false)) {
 //                navController.navigate(it.itemId)

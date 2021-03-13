@@ -11,13 +11,10 @@ import kz.adamant.domain.utils.filterThenMap
 class GetAllBooksUseCase(
         private val booksRepository: BooksRepository
 ) {
-    suspend operator fun invoke(query: String?, selectedGenres: List<Genre>?, shouldFetchFromNetwork: Boolean): Flow<Resource<List<Book>>> {
+    suspend operator fun invoke(query: String?, selectedGenres: List<Int>?, shouldFetchFromNetwork: Boolean): Flow<Resource<List<Book>>> {
         return booksRepository.getAllBooks(
             query,
-            selectedGenres?.filterThenMap(
-                predicate = {genre -> genre.selected},
-                transform = {genre -> genre.id}
-            ),
+            selectedGenres,
             shouldFetchFromNetwork
         )
     }

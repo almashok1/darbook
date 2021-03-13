@@ -11,7 +11,9 @@ import kz.adamant.bookstore.R
 import kz.adamant.bookstore.databinding.ItemFilterBottomSheetBinding
 import kz.adamant.domain.models.Genre
 
-class FilterDialogAdapter(): ListAdapter<Genre, FilterDialogAdapter.ViewHolder>(GENRE_COMPARATOR)  {
+class FilterDialogAdapter(
+    private val selectedGenresId: HashSet<Int>
+): ListAdapter<Genre, FilterDialogAdapter.ViewHolder>(GENRE_COMPARATOR)  {
 
     private var items: List<Genre> = mutableListOf()
 
@@ -29,7 +31,7 @@ class FilterDialogAdapter(): ListAdapter<Genre, FilterDialogAdapter.ViewHolder>(
         val view: View = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_filter_bottom_sheet, parent, false)
         val binding = ItemFilterBottomSheetBinding.bind(view)
-        return ViewHolder(binding)
+        return ViewHolder(binding, selectedGenresId)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -43,13 +45,17 @@ class FilterDialogAdapter(): ListAdapter<Genre, FilterDialogAdapter.ViewHolder>(
 
     class ViewHolder(
         private val binding: ItemFilterBottomSheetBinding,
+        private val selectedGenresId: HashSet<Int>
     ): RecyclerView.ViewHolder(binding.root) {
         fun bind(genre: Genre) {
             binding.run {
                 updateItem(genre)
                 genreTitle.text = genre.title
                 root.setOnClickListener {
-                    genre.selected = !genre.selected
+                    if (selectedGenresId.contains(genre.id))
+                        selectedGenresId.remove(genre.id)
+                    else
+                        selectedGenresId.add(genre.id)
                     updateItem(genre)
                 }
             }
@@ -57,7 +63,7 @@ class FilterDialogAdapter(): ListAdapter<Genre, FilterDialogAdapter.ViewHolder>(
 
         private fun updateItem(genre: Genre) {
             binding.run {
-                if (!genre.selected) {
+                if (!selectedGenresId.contains(genre.id)) {
                     card.setCardBackgroundColor(ContextCompat.getColor(root.context, android.R.color.transparent))
                     genreTitle.setTextColor(ContextCompat.getColor(root.context, android.R.color.tab_indicator_text))
                 } else {
