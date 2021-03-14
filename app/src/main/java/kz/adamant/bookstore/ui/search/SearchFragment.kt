@@ -15,6 +15,7 @@ import kz.adamant.bookstore.R
 import kz.adamant.bookstore.databinding.FragmentSearchBinding
 import kz.adamant.bookstore.ui.search.adapters.BooksListAdapter
 import kz.adamant.bookstore.utils.BindingFragment
+import kz.adamant.bookstore.utils.setEqualSpacing
 import kz.adamant.bookstore.utils.sharedGraphViewModel
 import kz.adamant.bookstore.viewmodels.SearchViewModel
 import kz.adamant.domain.models.Book
@@ -64,6 +65,8 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
         binding.run {
             bookRecyclerView.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             bookRecyclerView.adapter = adapter
+            val spacing = resources.getDimensionPixelSize(R.dimen.recyclerSpacing) / 2
+            bookRecyclerView.setEqualSpacing(spacing)
         }
     }
 

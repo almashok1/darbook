@@ -2,9 +2,7 @@ package kz.adamant.data.mappers
 
 import kz.adamant.data.local.models.BookEntity
 import kz.adamant.data.local.models.GenreEntity
-import kz.adamant.data.local.models.ReadingBookEntity
 import kz.adamant.data.local.models.ReadingEntity
-import kz.adamant.data.utils.toDateLong
 import kz.adamant.domain.models.Book
 import kz.adamant.domain.models.Genre
 import kz.adamant.domain.models.ReadingBook

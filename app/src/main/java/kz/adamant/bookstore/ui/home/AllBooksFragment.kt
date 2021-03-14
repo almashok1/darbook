@@ -2,7 +2,6 @@ package kz.adamant.bookstore.ui.home
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kz.adamant.bookstore.R
@@ -10,10 +9,11 @@ import kz.adamant.bookstore.databinding.FragmentAllBooksBinding
 import kz.adamant.bookstore.ui.search.adapters.BooksListAdapter
 import kz.adamant.bookstore.utils.BindingFragment
 import kz.adamant.bookstore.utils.observeOnce
-import kz.adamant.bookstore.utils.sharedGraphViewModel
+import kz.adamant.bookstore.utils.setEqualSpacing
 import kz.adamant.bookstore.viewmodels.AllBooksViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+
 
 class AllBooksFragment: BindingFragment<FragmentAllBooksBinding>(FragmentAllBooksBinding::inflate) {
 
@@ -38,8 +38,15 @@ class AllBooksFragment: BindingFragment<FragmentAllBooksBinding>(FragmentAllBook
 
     private fun setUpRecyclerView() {
         binding.run {
-            recyclerView.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+            recyclerView.layoutManager = StaggeredGridLayoutManager(
+                2,
+                StaggeredGridLayoutManager.VERTICAL
+            )
             recyclerView.adapter = adapter
+
+            val spacing = resources.getDimensionPixelSize(R.dimen.recyclerSpacing) / 2
+
+            recyclerView.setEqualSpacing(spacing)
         }
     }
 

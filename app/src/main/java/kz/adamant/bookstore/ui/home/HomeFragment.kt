@@ -45,9 +45,7 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::in
         viewModel.allReadingBooks.observe(viewLifecycleOwner) {
             it.data?.let { items ->
                 readingBooksAdapter.setItems(items)
-                if (items.isEmpty()) binding.noItemsNowReading.visibility = View.VISIBLE
-                else binding.noItemsNowReading.visibility = View.INVISIBLE
-                showSeeAllButtonIfNeeded(binding.seeAllNowReading, items.size)
+                applyVisibilities(items.size)
             }
             when(it) {
                 is Resource.Success -> {
@@ -71,9 +69,7 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::in
         viewModel.topBooksNewlyAdded.observe(viewLifecycleOwner) {
             it.data?.let { items ->
                 newlyAddedAdapter.setItems(items)
-                if (items.isEmpty()) binding.noItemsNewlyAdded.visibility = View.VISIBLE
-                else binding.noItemsNewlyAdded.visibility = View.INVISIBLE
-                showSeeAllButtonIfNeeded(binding.seeAllNewlyAdded, items.size)
+                applyVisibilities(items.size)
             }
             when(it) {
                 is Resource.Success -> {
@@ -91,6 +87,12 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::in
                 else -> {}
             }
         }
+    }
+
+    private fun applyVisibilities(size: Int) {
+        if (size == 0) binding.noItemsNowReading.visibility = View.VISIBLE
+        else binding.noItemsNowReading.visibility = View.INVISIBLE
+        showSeeAllButtonIfNeeded(binding.seeAllNowReading, size)
     }
 
     private fun showSeeAllButtonIfNeeded(seeAllBtn: Button, size: Int) {

@@ -59,13 +59,12 @@ class HomeBooksAdapter: ListAdapter<Book, HomeBooksAdapter.BookViewHolder>(BOOKS
                 bookTitle.text = book?.title ?: "No Book"
                 bookAuthor.text = book?.author ?: ""
                 bookImage.setImageDrawable(ContextCompat.getDrawable(binding.root.context, R.drawable.ic_image))
-
-                if (book != null)
-                    bookImage.load(Constants.mockBookUrls[book.id % 3]) {
-                        crossfade(true)
-                        placeholder(R.drawable.ic_image)
-                        error(R.drawable.ic_no_image)
-                    }
+                bookImage.load(if (book != null) Constants.mockBookUrls[book.id % 3] else null) {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_books)
+                    error(R.drawable.ic_image)
+                    fallback(R.drawable.ic_no_image)
+                }
             }
         }
     }
