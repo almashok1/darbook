@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -21,6 +22,8 @@ class FilterBottomSheet: BottomSheetDialogFragment() {
 
     private val adapter by lazy { FilterDialogAdapter(viewModel.selectedGenresId) }
     private val viewModel by sharedGraphViewModel<SearchViewModel>(R.id.nav_graph)
+
+    private var alreadyApplied = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,17 +57,18 @@ class FilterBottomSheet: BottomSheetDialogFragment() {
     }
 
     private fun onApplyFilter() {
-        viewModel.postSelectedGenresId(viewModel.selectedGenresId.toList())
+        alreadyApplied = true
+        viewModel.postSelectedGenresId(viewModel.selectedGenresId)
     }
 
     private fun onApplyFilterThenNavigate() {
         onApplyFilter()
-        findNavController().navigate(R.id.action_filterBottomSheet_to_searchFragment)
+        findNavController().popBackStack(R.id.searchFragment, false)
     }
 
     override fun onDestroyView() {
-        onApplyFilter()
         super.onDestroyView()
+        if (!alreadyApplied) onApplyFilter()
         _binding = null
     }
 }

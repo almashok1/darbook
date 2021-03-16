@@ -1,5 +1,6 @@
 package kz.adamant.data.utils
 
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -10,9 +11,13 @@ object DateConverter {
 }
 
 fun String.toDate(): Date? {
-    val parser = DateConverter.dateFormatter
-    parser.timeZone = DateConverter.timeZone
-    return parser.parse(this)
+    try {
+        val parser = DateConverter.dateFormatter
+        parser.timeZone = DateConverter.timeZone
+        return parser.parse(this)
+    } catch (e: ParseException) {
+        return null
+    }
 }
 
 fun Date.formatTo(): String {

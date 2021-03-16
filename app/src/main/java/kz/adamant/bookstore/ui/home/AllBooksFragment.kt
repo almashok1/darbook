@@ -2,10 +2,12 @@ package kz.adamant.bookstore.ui.home
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kz.adamant.bookstore.R
 import kz.adamant.bookstore.databinding.FragmentAllBooksBinding
+import kz.adamant.bookstore.ui.MainActivity
 import kz.adamant.bookstore.ui.search.adapters.BooksListAdapter
 import kz.adamant.bookstore.utils.BindingFragment
 import kz.adamant.bookstore.utils.observeOnce
@@ -32,6 +34,11 @@ class AllBooksFragment: BindingFragment<FragmentAllBooksBinding>(FragmentAllBook
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val actionBar = (requireActivity() as MainActivity).supportActionBar
+        when (args.booksType) {
+            NOW_READING -> actionBar?.title = getString(R.string.now_reading)
+            NEWLY_ADDED -> actionBar?.title = getString(R.string.newly_added)
+        }
         setUpRecyclerView()
         observeBooks()
     }

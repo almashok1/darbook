@@ -38,8 +38,7 @@
     </dialog>
     <fragment
         android:id="@+id/allBooksFragment"
-        android:name="kz.adamant.bookstore.ui.home.AllBooksFragment"
-        android:label="AllBooksFragment" >
+        android:name="kz.adamant.bookstore.ui.home.AllBooksFragment" >
         <action
             android:id="@+id/action_allBooksFragment_to_homeFragment"
             app:destination="@id/homeFragment" />

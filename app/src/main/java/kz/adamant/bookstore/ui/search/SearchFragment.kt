@@ -7,10 +7,8 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.snackbar.Snackbar
 import kz.adamant.bookstore.R
 import kz.adamant.bookstore.databinding.FragmentSearchBinding
 import kz.adamant.bookstore.ui.search.adapters.BooksListAdapter
@@ -107,12 +105,12 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         searchQuery(query)
-        return true
+        return false
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
         searchQuery(newText)
-        return true
+        return false
     }
 
     private fun searchQuery(query: String?) {
