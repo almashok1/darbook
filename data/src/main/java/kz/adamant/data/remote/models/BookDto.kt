@@ -7,6 +7,7 @@ data class BookDto(
     val title: String,
     val author: String,
     val image: String? = null,
+    val enabled: Boolean,
     @SerializedName("publish_date")
     val publishedDate: String? = null,
     @SerializedName("genre_id")

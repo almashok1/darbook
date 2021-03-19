@@ -1,13 +1,14 @@
 package kz.adamant.bookstore.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import kz.adamant.bookstore.NavGraphDirections
 import kz.adamant.bookstore.R
 import kz.adamant.bookstore.databinding.FragmentHomeBinding
+import kz.adamant.bookstore.models.BookDvo
 import kz.adamant.bookstore.ui.home.adapters.HomeBooksAdapter
 import kz.adamant.bookstore.utils.BindingFragment
 import kz.adamant.bookstore.utils.sharedGraphViewModel
@@ -19,8 +20,8 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::in
 
     private val viewModel by sharedGraphViewModel<HomeViewModel>(R.id.nav_graph)
 
-    private val readingBooksAdapter = HomeBooksAdapter()
-    private val newlyAddedAdapter = HomeBooksAdapter()
+    private val readingBooksAdapter = HomeBooksAdapter(::onBookPressed)
+    private val newlyAddedAdapter = HomeBooksAdapter(::onBookPressed)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,57 +37,55 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::in
         setUpSwipeRefresh()
         observeReadingBooks()
         observeNewlyAdded()
-        binding.seeAllNewlyAdded.setOnClickListener { setSeeAllButton(AllBooksFragment.NEWLY_ADDED) }
-        binding.seeAllNowReading.setOnClickListener { setSeeAllButton(AllBooksFragment.NOW_READING) }
+        binding.seeAllNewlyAdded.setOnClickListener { onClickSeeAllButton(AllBooksFragment.NEWLY_ADDED) }
+        binding.seeAllNowReading.setOnClickListener { onClickSeeAllButton(AllBooksFragment.NOW_READING) }
+    }
+
+    private fun setResourceItems(
+        resource: Resource<List<BookDvo?>>,
+        onSetItems: (List<BookDvo?>) -> Unit
+    ) {
+        resource.data?.let { items ->
+            onSetItems(items.take(TOP_N))
+            applyVisibilities(items.size)
+        }
+        when(resource) {
+            is Resource.Success -> {
+                setRefreshing(false)
+                hideProgressBar()
+            }
+            is Resource.Loading -> {
+                showProgressBar()
+            }
+            is Resource.Error -> {
+                hideProgressBar()
+                setRefreshing(false)
+                showErrorSnackbar(resource.throwable.localizedMessage ?: "")
+            }
+            else -> {}
+        }
     }
 
 
     private fun observeReadingBooks() {
-        viewModel.allReadingBooks.observe(viewLifecycleOwner) {
-            it.data?.let { items ->
-                readingBooksAdapter.setItems(items)
-                applyVisibilities(items.size)
-            }
-            when(it) {
-                is Resource.Success -> {
-                    setRefreshing(false)
-                    hideProgressBar()
-                }
-                is Resource.Loading -> {
-                    showProgressBar()
-                }
-                is Resource.Error -> {
-                    hideProgressBar()
-                    setRefreshing(false)
-                    showErrorSnackbar(it.throwable.localizedMessage ?: "")
-                }
-                else -> {}
+        viewModel.userReadingBooks.observe(viewLifecycleOwner) {
+            setResourceItems(it) { books ->
+                readingBooksAdapter.setItems(books)
             }
         }
     }
 
     private fun observeNewlyAdded() {
-        viewModel.topBooksNewlyAdded.observe(viewLifecycleOwner) {
-            it.data?.let { items ->
-                newlyAddedAdapter.setItems(items)
-                applyVisibilities(items.size)
-            }
-            when(it) {
-                is Resource.Success -> {
-                    setRefreshing(false)
-                    hideProgressBar()
-                }
-                is Resource.Loading -> {
-                    showProgressBar()
-                }
-                is Resource.Error -> {
-                    hideProgressBar()
-                    setRefreshing(false)
-                    showErrorSnackbar(it.throwable.localizedMessage ?: "")
-                }
-                else -> {}
+        viewModel.newlyAddedBooks.observe(viewLifecycleOwner) {
+            setResourceItems(it) { books ->
+                newlyAddedAdapter.setItems(books)
             }
         }
+    }
+
+    private fun onBookPressed(book: BookDvo?) {
+        if (book == null) return
+        navController.navigate(NavGraphDirections.actionGlobalBookDetailFragment(book))
     }
 
     private fun applyVisibilities(size: Int) {
@@ -96,14 +95,14 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::in
     }
 
     private fun showSeeAllButtonIfNeeded(seeAllBtn: Button, size: Int) {
-        if (size >= TOP_N) {
+        if (size > TOP_N) {
             seeAllBtn.visibility = View.VISIBLE
         } else {
             seeAllBtn.visibility = View.INVISIBLE
         }
     }
 
-    private fun setSeeAllButton(booksType: Int) {
+    private fun onClickSeeAllButton(booksType: Int) {
         navController.navigate(HomeFragmentDirections.actionHomeFragmentToAllBooksFragment(booksType))
     }
 

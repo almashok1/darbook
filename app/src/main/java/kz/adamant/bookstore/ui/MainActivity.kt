@@ -3,8 +3,6 @@ package kz.adamant.bookstore.ui
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
@@ -26,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.navController
 
         val appBarConfiguration = AppBarConfiguration
-            .Builder(R.id.homeFragment, R.id.searchFragment, R.id.profileFragment)
+            .Builder(R.id.homeFragment, R.id.searchFragment, R.id.profileFragment, R.id.bookScannerFragment)
             .build()
 
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
@@ -40,9 +38,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        return when(navController.currentDestination?.id) {
-            R.id.homeFragment, R.id.searchFragment, R.id.profileFragment -> super.onSupportNavigateUp()
-            else -> super.onSupportNavigateUp() || navController.navigateUp()
-        }
+        return super.onSupportNavigateUp() || navController.navigateUp()
     }
 }

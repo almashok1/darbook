@@ -18,6 +18,7 @@ internal fun BookDto.toDomain(): Book {
         title = title,
         author = author,
         image = image,
+        enabled = enabled,
         publishedDate = publishedDate?.toDate(),
         genreId = genreId,
         createdAt = createdAt?.toDate(),

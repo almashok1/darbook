@@ -8,6 +8,7 @@ import kz.adamant.domain.models.ReadingBook
 interface BooksDataSource {
     suspend fun getAllBooks(): Flow<List<Book>>
     suspend fun getAllGenres(): Flow<List<Genre>>
-    suspend fun getAllReadingBooks(fetchTopN: Int? = null): Flow<List<ReadingBook>>
-    suspend fun getAllBooksNewlyAdded(fetchTopN: Int? = null): Flow<List<Book>>
+    suspend fun getGenreById(genreId: Int): Flow<Genre?>
+    suspend fun getAllReadingBooks(): Flow<List<ReadingBook>>
+    suspend fun getAllBooksNewlyAdded(): Flow<List<Book>>
 }

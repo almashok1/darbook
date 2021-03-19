@@ -13,4 +13,12 @@
     <string name="see_all">See all</string>
     <string name="newly_added">Newly Added</string>
     <string name="no_items_found">No items found</string>
+    <string name="rent_book">Rent Book</string>
+    <string name="rented_by_someone">Rented By Someone</string>
+    <string name="you_already_rented">You\'ve Already Rented</string>
+    <string name="loading">Loading</string>
+    <string name="failed">Failed</string>
+    <string name="genre_tv">Genre:</string>
+    <string name="published_tv">Published:</string>
+    <string name="scanner">Scanner</string>
 </resources>

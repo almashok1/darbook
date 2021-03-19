@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -13,7 +12,6 @@ import kz.adamant.bookstore.databinding.FragmentFilterBottomSheetBinding
 import kz.adamant.bookstore.ui.search.adapters.FilterDialogAdapter
 import kz.adamant.bookstore.utils.sharedGraphViewModel
 import kz.adamant.bookstore.viewmodels.SearchViewModel
-import kz.adamant.domain.models.Resource
 
 class FilterBottomSheet: BottomSheetDialogFragment() {
 

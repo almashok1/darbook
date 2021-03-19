@@ -14,6 +14,7 @@ internal fun Book.toEntity(): BookEntity {
         title = title,
         author = author,
         image = image,
+        enabled = enabled,
         publishedDate = publishedDate?.time,
         genreId = genreId,
         createdAt = createdAt?.time,
@@ -33,7 +34,7 @@ internal fun Genre.toEntity(): GenreEntity {
 }
 
 
-internal fun ReadingBook.toDomain(): ReadingEntity {
+internal fun ReadingBook.toEntity(): ReadingEntity {
     return ReadingEntity(
         readingId = id,
         userId = userId,

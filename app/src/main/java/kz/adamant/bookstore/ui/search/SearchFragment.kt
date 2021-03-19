@@ -9,14 +9,15 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import kz.adamant.bookstore.NavGraphDirections
 import kz.adamant.bookstore.R
 import kz.adamant.bookstore.databinding.FragmentSearchBinding
+import kz.adamant.bookstore.models.BookDvo
 import kz.adamant.bookstore.ui.search.adapters.BooksListAdapter
 import kz.adamant.bookstore.utils.BindingFragment
 import kz.adamant.bookstore.utils.setEqualSpacing
 import kz.adamant.bookstore.utils.sharedGraphViewModel
 import kz.adamant.bookstore.viewmodels.SearchViewModel
-import kz.adamant.domain.models.Book
 import kz.adamant.domain.models.Resource
 
 class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBinding::inflate),
@@ -27,7 +28,7 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = BooksListAdapter()
+        adapter = BooksListAdapter(::onBookPressed)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -99,6 +100,11 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
         }
     }
 
+    private fun onBookPressed(book: BookDvo?) {
+        if (book == null) return
+        navController.navigate(NavGraphDirections.actionGlobalBookDetailFragment(book))
+    }
+
     override fun onRefresh() {
         viewModel.setForceRefresh()
     }
@@ -136,7 +142,7 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
         }
     }
 
-    private fun setItems(data: List<Book>) {
+    private fun setItems(data: List<BookDvo>) {
         adapter.setItems(data)
     }
 }

@@ -24,6 +24,9 @@ interface BooksDao {
     @Query("SELECT * FROM books_table WHERE genreId IN (:genres) AND (LOWER(title) LIKE LOWER(:query) OR isbn LIKE (:query))")
     fun searchBooksWithFilter(query: String, genres: List<Int>): Flow<List<BookEntity>>
 
+    @Query("SELECT * FROM books_table WHERE isbn = :isbn")
+    fun getBookByIsbn(isbn: String): Flow<List<BookEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBooks(books: List<BookEntity>)
 

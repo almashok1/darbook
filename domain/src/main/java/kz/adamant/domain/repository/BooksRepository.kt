@@ -8,7 +8,7 @@ import kz.adamant.domain.models.Resource
 
 interface BooksRepository {
     suspend fun getAllBooks(query: String?, selectedGenres: List<Int>?, shouldFetchFromNetwork: Boolean): Flow<Resource<List<Book>>>
-    suspend fun getAllGenres(shouldFetchFromNetwork: Boolean): Flow<Resource<List<Genre>>>
-    suspend fun getAllReadingBooks(shouldFetchFromNetwork: Boolean, fetchTopN: Int? = null): Flow<Resource<List<ReadingBook>>>
-    suspend fun getAllBooksNewlyAdded(shouldFetchFromNetwork: Boolean, fetchTopN: Int? = null): Flow<Resource<List<Book>>>
+    suspend fun getBookByIsbn(isbn: String): Flow<List<Book>>
+    suspend fun getAllReadingBooks(shouldFetchFromNetwork: Boolean): Flow<Resource<List<ReadingBook>>>
+    suspend fun getAllBooksNewlyAdded(shouldFetchFromNetwork: Boolean): Flow<Resource<List<Book>>>
 }

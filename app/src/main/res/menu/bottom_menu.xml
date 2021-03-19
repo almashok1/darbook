@@ -9,6 +9,10 @@
         android:title="@string/search"
         android:icon="@drawable/ic_search"/>
     <item
+        android:id="@+id/bookScannerFragment"
+        android:title="@string/scanner"
+        android:icon="@drawable/ic_scanner"/>
+    <item
         android:id="@+id/profileFragment"
         android:title="@string/profile"
         android:icon="@drawable/ic_person"/>

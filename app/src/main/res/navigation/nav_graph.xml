@@ -46,4 +46,19 @@
             android:name="booksType"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/bookDetailFragment"
+        android:name="kz.adamant.bookstore.ui.bookdetail.BookDetailFragment"
+        android:label="Book Detail" >
+        <argument
+            android:name="book"
+            app:argType="kz.adamant.bookstore.models.BookDvo" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_bookDetailFragment"
+        app:destination="@id/bookDetailFragment"/>
+    <fragment
+        android:id="@+id/bookScannerFragment"
+        android:name="kz.adamant.bookstore.ui.scanner.BookScannerFragment"
+        android:label="Book Scanner" />
 </navigation>

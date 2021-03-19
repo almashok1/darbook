@@ -1,30 +1,31 @@
 package kz.adamant.bookstore.di
 
 import kz.adamant.bookstore.utils.Constants
-import kz.adamant.bookstore.viewmodels.AllBooksViewModel
+import kz.adamant.bookstore.viewmodels.BookDetailViewModel
+import kz.adamant.bookstore.viewmodels.BookScannerViewModel
 import kz.adamant.bookstore.viewmodels.HomeViewModel
 import kz.adamant.bookstore.viewmodels.SearchViewModel
 import kz.adamant.data.local.BookDatabase
 import kz.adamant.data.remote.api.BooksApiService
 import kz.adamant.data.repository.BooksDataSource
 import kz.adamant.data.repository.BooksRepositoryImpl
+import kz.adamant.data.repository.GenreRepositoryImpl
+import kz.adamant.data.repository.RentRepositoryImpl
 import kz.adamant.data.repository.datasources.BooksLocalDataSource
 import kz.adamant.data.repository.datasources.BooksRemoteDataSource
 import kz.adamant.domain.repository.BooksRepository
-import kz.adamant.domain.usecases.GetAllBooksNewlyAddedUseCase
-import kz.adamant.domain.usecases.GetAllBooksUseCase
-import kz.adamant.domain.usecases.GetAllGenresUseCase
-import kz.adamant.domain.usecases.GetAllReadingBooksUseCase
+import kz.adamant.domain.repository.GenreRepository
+import kz.adamant.domain.repository.RentRepository
+import kz.adamant.domain.usecases.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val localDataSourceModule = module {
     single { BookDatabase.getInstance(androidContext()) }
-    single<BooksDataSource>(named("local")) {
+    single {
         BooksLocalDataSource(
             get<BookDatabase>().booksDao(),
             get<BookDatabase>().genresDao(),
@@ -39,14 +40,24 @@ val remoteDataSourceModule = module {
     single{ provideRetrofit(get(), Constants.BASE_URL) }
     single<BooksApiService> { get<Retrofit>().create(BooksApiService::class.java) }
 
-    single<BooksDataSource>(named("remote")) { BooksRemoteDataSource(get())  }
+    single { BooksRemoteDataSource(get())  }
 }
 
 val repositoryModule = module {
     single<BooksRepository> {
         BooksRepositoryImpl(
-            get(named("local")),
-            get(named("remote")),
+            get<BooksLocalDataSource>(),
+            get<BooksRemoteDataSource>(),
+        )
+    }
+    single<RentRepository> {
+        RentRepositoryImpl(get<BooksLocalDataSource>(), get<BooksRemoteDataSource>())
+    }
+
+    single<GenreRepository> {
+        GenreRepositoryImpl(
+            get<BooksLocalDataSource>() as BooksDataSource,
+            get<BooksRemoteDataSource>() as BooksDataSource,
         )
     }
 }
@@ -54,14 +65,19 @@ val repositoryModule = module {
 val useCasesModule = module {
     single { GetAllBooksUseCase(get()) }
     single { GetAllGenresUseCase(get()) }
-    single { GetAllReadingBooksUseCase(get()) }
+    single { GetReadingBooksUseCase(get()) }
     single { GetAllBooksNewlyAddedUseCase(get()) }
+    single { GetBookRentingMarkUseCase(get()) }
+    single { GetGenreUseCase(get()) }
+    single { RentBookUseCase(get()) }
+    single { GetSingleBookUseCase(get()) }
 }
 
 val viewModelModule = module {
-    viewModel<HomeViewModel> { HomeViewModel(get(), get()) }
-    viewModel<AllBooksViewModel> { (booksType: Int) -> AllBooksViewModel(booksType, get(), get()) }
-    viewModel<SearchViewModel> { SearchViewModel(get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get()) }
+    viewModel { SearchViewModel(get(), get(), get()) }
+    viewModel { BookDetailViewModel(get(), get()) }
+    viewModel { BookScannerViewModel(get(), get()) }
 }
 
 

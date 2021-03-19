@@ -2,19 +2,19 @@ package kz.adamant.bookstore.ui.home
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import kz.adamant.bookstore.NavGraphDirections
 import kz.adamant.bookstore.R
 import kz.adamant.bookstore.databinding.FragmentAllBooksBinding
+import kz.adamant.bookstore.models.BookDvo
 import kz.adamant.bookstore.ui.MainActivity
 import kz.adamant.bookstore.ui.search.adapters.BooksListAdapter
 import kz.adamant.bookstore.utils.BindingFragment
-import kz.adamant.bookstore.utils.observeOnce
 import kz.adamant.bookstore.utils.setEqualSpacing
-import kz.adamant.bookstore.viewmodels.AllBooksViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
+import kz.adamant.bookstore.utils.sharedGraphViewModel
+import kz.adamant.bookstore.viewmodels.HomeViewModel
+import kz.adamant.domain.models.Resource
 
 
 class AllBooksFragment: BindingFragment<FragmentAllBooksBinding>(FragmentAllBooksBinding::inflate) {
@@ -26,11 +26,9 @@ class AllBooksFragment: BindingFragment<FragmentAllBooksBinding>(FragmentAllBook
         const val NEWLY_ADDED = 2
     }
 
-    private val viewModel by viewModel<AllBooksViewModel>(
-        parameters = { parametersOf(args.booksType) }
-    )
+    private val viewModel by sharedGraphViewModel<HomeViewModel>(R.id.nav_graph)
 
-    private val adapter = BooksListAdapter()
+    private val adapter = BooksListAdapter(::onBookPressed)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -59,17 +57,20 @@ class AllBooksFragment: BindingFragment<FragmentAllBooksBinding>(FragmentAllBook
 
     private fun observeBooks() {
         if (args.booksType == NOW_READING)
-            viewModel.readingBooks.observeOnce(viewLifecycleOwner) {
-                it.data?.let { items ->
-                    adapter.setItems(items)
-                }
-            }
+            viewModel.userReadingBooks.observe(viewLifecycleOwner) { setResourceItems(it) }
         else if (args.booksType == NEWLY_ADDED) {
-            viewModel.newlyAdded.observeOnce(viewLifecycleOwner) {
-                it.data?.let { items ->
-                    adapter.setItems(items)
-                }
-            }
+            viewModel.newlyAddedBooks.observe(viewLifecycleOwner) { setResourceItems(it) }
         }
+    }
+
+    private fun setResourceItems(resource: Resource<List<BookDvo?>>) {
+        resource.data?.let { items ->
+            adapter.setItems(items)
+        }
+    }
+
+    private fun onBookPressed(book: BookDvo?) {
+        if (book == null) return
+        navController.navigate(NavGraphDirections.actionGlobalBookDetailFragment(book))
     }
 }

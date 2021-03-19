@@ -12,6 +12,7 @@ internal fun BookDto.toEntity(): BookEntity {
         title = title,
         author = author,
         image = image,
+        enabled = enabled,
         publishedDate = publishedDate?.toLong(),
         genreId = genreId,
         createdAt = createdAt?.toLong(),

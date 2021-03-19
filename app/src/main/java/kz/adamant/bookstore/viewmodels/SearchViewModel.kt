@@ -1,19 +1,25 @@
 package kz.adamant.bookstore.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
-import kz.adamant.domain.models.Book
+import kz.adamant.bookstore.mappers.toDvo
+import kz.adamant.bookstore.models.BookDvo
 import kz.adamant.domain.models.Genre
 import kz.adamant.domain.models.Resource
 import kz.adamant.domain.usecases.GetAllBooksUseCase
 import kz.adamant.domain.usecases.GetAllGenresUseCase
+import kz.adamant.domain.usecases.GetBookRentingMarkUseCase
 
 class SearchViewModel(
     private val getAllBooksUseCase: GetAllBooksUseCase,
-    private val getAllGenresUseCase: GetAllGenresUseCase
+    private val getAllGenresUseCase: GetAllGenresUseCase,
+    private val getBookRentingMarkUseCase: GetBookRentingMarkUseCase
 ): BaseViewModel() {
-    private var _allBooks: LiveData<Resource<List<Book>>> = MutableLiveData()
+    private var _allBooks: LiveData<Resource<List<BookDvo>>> = MutableLiveData()
     private var _genres: LiveData<Resource<List<Genre>>> = MutableLiveData()
 
     private val _query = MutableLiveData<String?>().apply { value = null }
@@ -34,6 +40,10 @@ class SearchViewModel(
                     shouldFetchBooks || it.third ?: false
                 )
                     .onCompletion { determineFetchBooks() }
+                    .flatMapConcat {
+                        flowOf(it.toDvo { items -> items!!.map { book -> book.toDvo(getBookRentingMarkUseCase(book.id, "123")) } })
+                    }
+                    .flowOn(Dispatchers.IO)
                     .asLiveData()
             }
         }

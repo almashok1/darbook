@@ -11,6 +11,7 @@ data class BookEntity (
     val title: String,
     val author: String,
     val image: String? = null,
+    val enabled: Boolean,
     val publishedDate: Long? = null,
     val genreId: Int? = null,
     val createdAt: Long? = null,

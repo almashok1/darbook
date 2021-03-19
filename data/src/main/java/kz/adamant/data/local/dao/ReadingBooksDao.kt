@@ -15,6 +15,12 @@ interface ReadingBooksDao {
     @Query("SELECT * FROM reading_book_table ORDER BY updatedAt DESC LIMIT :topN")
     fun topReadingBooks(topN: Int): Flow<List<ReadingBookEntity>>
 
+    @Query("SELECT COUNT(*) FROM reading_book_table WHERE bookId = :bookId AND userId = :userId")
+    fun getReadingBookCountByUserId(bookId: Int, userId: String): Int
+
+    @Query("SELECT COUNT(*) FROM reading_book_table WHERE bookId = :bookId")
+    suspend fun getReadingBookCount(bookId: Int): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertReadingEntity(genres: List<ReadingEntity>)
 

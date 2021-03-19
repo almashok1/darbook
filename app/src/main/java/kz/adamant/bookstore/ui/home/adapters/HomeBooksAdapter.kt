@@ -4,29 +4,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
 import kz.adamant.bookstore.R
 import kz.adamant.bookstore.databinding.BookHomeItemBinding
+import kz.adamant.bookstore.models.BookDvo
 import kz.adamant.bookstore.utils.Comparators.BOOKS_COMPARATOR
-import kz.adamant.bookstore.utils.Constants
-import kz.adamant.domain.models.Book
-import kz.adamant.domain.models.ReadingBook
+import kz.adamant.bookstore.utils.loadBookImage
 
 
-class HomeBooksAdapter: ListAdapter<Book, HomeBooksAdapter.BookViewHolder>(BOOKS_COMPARATOR) {
+class HomeBooksAdapter(
+    private val onBookPressed: (book: BookDvo?) -> Unit
+): ListAdapter<BookDvo, HomeBooksAdapter.BookViewHolder>(BOOKS_COMPARATOR) {
 
-    private var items: List<Book?> = mutableListOf()
+    private var items: List<BookDvo?> = mutableListOf()
 
-    @JvmName("setReadingBookItems")
-    fun setItems(items: List<ReadingBook>) {
-        this.items = items.map { it.book }
-        notifyDataSetChanged()
-    }
-
-    fun setItems(items: List<Book>) {
+    fun setItems(items: List<BookDvo?>) {
         this.items = items
         notifyDataSetChanged()
     }
@@ -35,13 +28,7 @@ class HomeBooksAdapter: ListAdapter<Book, HomeBooksAdapter.BookViewHolder>(BOOKS
         val view: View = LayoutInflater.from(parent.context)
             .inflate(R.layout.book_home_item, parent, false)
         val binding = BookHomeItemBinding.bind(view)
-//        if (type == HOME_VIEW) {
-//            val params = binding.root.layoutParams as RecyclerView.LayoutParams
-//            params.width = ConstraintLayout.LayoutParams.WRAP_CONTENT
-//            params.marginEnd = 32
-//            binding.root.layoutParams = params
-//        }
-        return BookViewHolder(binding)
+        return BookViewHolder(binding, onBookPressed)
     }
 
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
@@ -53,34 +40,20 @@ class HomeBooksAdapter: ListAdapter<Book, HomeBooksAdapter.BookViewHolder>(BOOKS
     }
 
 
-    class BookViewHolder(private val binding: BookHomeItemBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(book: Book?) {
+    class BookViewHolder(
+        private val binding: BookHomeItemBinding,
+        private val onBookPressed: (book: BookDvo?) -> Unit
+    ): RecyclerView.ViewHolder(binding.root) {
+        fun bind(book: BookDvo?) {
             binding.run {
                 bookTitle.text = book?.title ?: "No Book"
                 bookAuthor.text = book?.author ?: ""
                 bookImage.setImageDrawable(ContextCompat.getDrawable(binding.root.context, R.drawable.ic_image))
-                bookImage.load(if (book != null) Constants.mockBookUrls[book.id % 3] else null) {
-                    crossfade(true)
-                    placeholder(R.drawable.ic_books)
-                    error(R.drawable.ic_image)
-                    fallback(R.drawable.ic_no_image)
+                bookImage.loadBookImage(book)
+                root.setOnClickListener {
+                    onBookPressed(book)
                 }
             }
         }
     }
-
-
-//    companion object {
-//
-//        private val READING_BOOKS_COMPARATOR = object : DiffUtil.ItemCallback<ReadingBook>() {
-//            override fun areItemsTheSame(oldItem: ReadingBook, newItem: ReadingBook): Boolean {
-//                return oldItem === newItem
-//            }
-//
-//            override fun areContentsTheSame(oldItem: ReadingBook, newItem: ReadingBook): Boolean {
-//                return oldItem.book?.title == newItem.book?.title
-//            }
-//        }
-//    }
-
 }

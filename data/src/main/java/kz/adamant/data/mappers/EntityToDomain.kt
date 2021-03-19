@@ -19,6 +19,7 @@ internal fun BookEntity.toDomain(): Book {
         title = title,
         author = author,
         image = image,
+        enabled = enabled,
         publishedDate = publishedDate?.formatToDate(),
         genreId = genreId,
         createdAt = createdAt?.formatToDate(),
