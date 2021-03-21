@@ -1,6 +1,7 @@
 package kz.adamant.bookstore.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,11 +28,7 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::in
         super.onViewCreated(view, savedInstanceState)
         binding.run {
             nowReadingRecyclerView.adapter = readingBooksAdapter
-            nowReadingRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-
-
             newlyAddedRecyclerView.adapter = newlyAddedAdapter
-            newlyAddedRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         }
 
         setUpSwipeRefresh()
@@ -43,11 +40,12 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::in
 
     private fun setResourceItems(
         resource: Resource<List<BookDvo?>>,
+        booksType: Int,
         onSetItems: (List<BookDvo?>) -> Unit
     ) {
         resource.data?.let { items ->
             onSetItems(items.take(TOP_N))
-            applyVisibilities(items.size)
+            applyVisibilities(items.size, booksType)
         }
         when(resource) {
             is Resource.Success -> {
@@ -66,10 +64,14 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::in
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.setForceRefresh()
+    }
 
     private fun observeReadingBooks() {
         viewModel.userReadingBooks.observe(viewLifecycleOwner) {
-            setResourceItems(it) { books ->
+            setResourceItems(it, AllBooksFragment.NOW_READING) { books ->
                 readingBooksAdapter.setItems(books)
             }
         }
@@ -77,7 +79,7 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::in
 
     private fun observeNewlyAdded() {
         viewModel.newlyAddedBooks.observe(viewLifecycleOwner) {
-            setResourceItems(it) { books ->
+            setResourceItems(it, AllBooksFragment.NEWLY_ADDED) { books ->
                 newlyAddedAdapter.setItems(books)
             }
         }
@@ -88,13 +90,20 @@ class HomeFragment: BindingFragment<FragmentHomeBinding>(FragmentHomeBinding::in
         navController.navigate(NavGraphDirections.actionGlobalBookDetailFragment(book))
     }
 
-    private fun applyVisibilities(size: Int) {
-        if (size == 0) binding.noItemsNowReading.visibility = View.VISIBLE
-        else binding.noItemsNowReading.visibility = View.INVISIBLE
-        showSeeAllButtonIfNeeded(binding.seeAllNowReading, size)
+    private fun applyVisibilities(size: Int, booksType: Int) {
+        val noItemView = getNoItemView(booksType)
+        if (size == 0) noItemView.visibility = View.VISIBLE
+        else noItemView.visibility = View.INVISIBLE
+
+        setSeeAllButtonVisibility(binding.seeAllNowReading, size)
     }
 
-    private fun showSeeAllButtonIfNeeded(seeAllBtn: Button, size: Int) {
+    private fun getNoItemView(booksType: Int): View {
+        return if (booksType == AllBooksFragment.NEWLY_ADDED) binding.noItemsNewlyAdded
+        else binding.noItemsNowReading
+    }
+
+    private fun setSeeAllButtonVisibility(seeAllBtn: Button, size: Int) {
         if (size > TOP_N) {
             seeAllBtn.visibility = View.VISIBLE
         } else {

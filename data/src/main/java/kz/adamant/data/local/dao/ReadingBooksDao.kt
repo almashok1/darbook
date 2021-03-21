@@ -9,7 +9,7 @@ import kz.adamant.data.local.models.ReadingEntity
 
 @Dao
 interface ReadingBooksDao {
-    @Query("SELECT * FROM reading_book_table")
+    @Query("SELECT * FROM reading_book_table ORDER BY updatedAt DESC")
     fun allReadingBooks(): Flow<List<ReadingBookEntity>>
 
     @Query("SELECT * FROM reading_book_table ORDER BY updatedAt DESC LIMIT :topN")

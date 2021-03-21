@@ -12,8 +12,6 @@
         android:layout_marginTop="8dp"
         android:adjustViewBounds="true"
         android:background="@drawable/round_outline"
-        android:maxWidth="170dp"
-        android:minWidth="100dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -62,7 +62,6 @@ class SearchFragment: BindingFragment<FragmentSearchBinding>(FragmentSearchBindi
 
     private fun setUpRecyclerView() {
         binding.run {
-            bookRecyclerView.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             bookRecyclerView.adapter = adapter
             val spacing = resources.getDimensionPixelSize(R.dimen.recyclerSpacing) / 2
             bookRecyclerView.setEqualSpacing(spacing)

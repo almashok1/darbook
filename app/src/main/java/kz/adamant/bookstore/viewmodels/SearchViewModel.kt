@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
 import kz.adamant.bookstore.mappers.toDvo
 import kz.adamant.bookstore.models.BookDvo
+import kz.adamant.bookstore.utils.ThrottledLiveData
 import kz.adamant.domain.models.Genre
 import kz.adamant.domain.models.Resource
 import kz.adamant.domain.usecases.GetAllBooksUseCase
@@ -49,7 +50,7 @@ class SearchViewModel(
         }
     }
 
-    val allBooks get() = _allBooks
+    val allBooks by lazy { ThrottledLiveData(_allBooks, 500L) }
     val genres get() = _genres
     val query get() = _query
 

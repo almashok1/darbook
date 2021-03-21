@@ -43,14 +43,8 @@ class AllBooksFragment: BindingFragment<FragmentAllBooksBinding>(FragmentAllBook
 
     private fun setUpRecyclerView() {
         binding.run {
-            recyclerView.layoutManager = StaggeredGridLayoutManager(
-                2,
-                StaggeredGridLayoutManager.VERTICAL
-            )
             recyclerView.adapter = adapter
-
             val spacing = resources.getDimensionPixelSize(R.dimen.recyclerSpacing) / 2
-
             recyclerView.setEqualSpacing(spacing)
         }
     }

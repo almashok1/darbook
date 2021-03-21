@@ -1,19 +1,18 @@
 package kz.adamant.data.repository
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flowOf
-import kz.adamant.data.mappers.toDomain
 import kz.adamant.data.mappers.toEntity
 import kz.adamant.data.repository.datasources.BooksLocalDataSource
+import kz.adamant.data.repository.datasources.BooksRemoteDataSource
 import kz.adamant.data.utils.networkBoundResource
 import kz.adamant.domain.models.Genre
 import kz.adamant.domain.models.Resource
 import kz.adamant.domain.repository.GenreRepository
 
 class GenreRepositoryImpl(
-    private val localDataSource: BooksDataSource,
-    private val remoteDataSource: BooksDataSource,
+    private val localDataSource: BooksLocalDataSource,
+    private val remoteDataSource: BooksRemoteDataSource,
 ): GenreRepository {
     override suspend fun getGenreById(genreId: Int): Flow<Resource<Genre?>> {
         return networkBoundResource(
@@ -34,14 +33,13 @@ class GenreRepositoryImpl(
     }
 
     private suspend fun saveGenresToDatabase(genres: List<Genre>) {
-        val local = localDataSource as BooksLocalDataSource
-        local.resetGenresTable()
-        local.saveAllGenres(genres.map {genresDto -> genresDto.toEntity()})
+        localDataSource.resetGenresTable()
+        localDataSource.saveAllGenres(genres.map {genresDto -> genresDto.toEntity()})
     }
 
     private suspend fun saveGenre(genre: Genre?) {
         if (genre == null) return
-        val local = localDataSource as BooksLocalDataSource
-        local.updateGenre(genre.toEntity())
+        Log.d("TAG", "saveGenre: $genre")
+        localDataSource.updateGenre(genre.toEntity())
     }
 }

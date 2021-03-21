@@ -29,6 +29,11 @@ class BookDetailFragment: BindingFragment<FragmentBookDetailBinding>(FragmentBoo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpBookDetails()
+        setRentButton()
+    }
+
+    private fun setUpBookDetails() {
         binding.run {
             bookImage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_books))
             bookTitle.text = args.book.title
@@ -38,27 +43,28 @@ class BookDetailFragment: BindingFragment<FragmentBookDetailBinding>(FragmentBoo
 
             getGenre()
             observeBookGenre()
-
-            bindProgressButton(rentBookBtn)
-            rentBookBtn.attachTextChangeAnimator {
-                fadeInMills = 150L
-                fadeOutMills = 150L
-            }
-            when(args.book.rentedMark) {
-                RENTED_BY_NONE -> {
-                    observeReadingBookResponse()
-                    setRentButtonClick()
-                }
-                RENTED_BY_ANOTHER_USER -> {
-                    disableRentButton(getString(R.string.rented_by_someone))
-                }
-                RENTED_BY_CURRENT_USER -> {
-                    disableRentButton(getString(R.string.you_already_rented))
-                }
-            }
         }
     }
 
+    private fun setRentButton() {
+        bindProgressButton(binding.rentBookBtn)
+        binding.rentBookBtn.attachTextChangeAnimator {
+            fadeInMills = 150L
+            fadeOutMills = 150L
+        }
+        when(args.book.rentedMark) {
+            RENTED_BY_NONE -> {
+                observeReadingBookResponse()
+                setRentButtonClick()
+            }
+            RENTED_BY_ANOTHER_USER -> {
+                disableRentButton(getString(R.string.rented_by_someone))
+            }
+            RENTED_BY_CURRENT_USER -> {
+                disableRentButton(getString(R.string.you_already_rented))
+            }
+        }
+    }
     private fun parseDateToReadableFormat(date: Date?): String {
         if (date == null) return "No date"
         return SimpleDateFormat("dd, MMM yyyy", Locale.getDefault()).format(date)
