@@ -22,7 +22,6 @@ class HomeViewModel(
     private val getReadingBooksUseCase: GetReadingBooksUseCase,
     private val getAllBooksNewlyAddedUseCaseUseCase: GetAllBooksNewlyAddedUseCase,
     private val getBookRentingMarkUseCase: GetBookRentingMarkUseCase,
-    private val getAllGenresUseCase: GetAllGenresUseCase
 ) : BaseViewModel() {
     private var _allReadingBooks: LiveData<Resource<List<ReadingBook>>> = MutableLiveData()
     private var _userReadingBooks: LiveData<Resource<List<BookDvo?>>> = MutableLiveData()
@@ -30,7 +29,6 @@ class HomeViewModel(
     private val _forceRefresh = MutableLiveData<Boolean>().apply { value = true }
 
     init {
-        launchCoroutine { getAllGenresUseCase(shouldFetch) }
         _allReadingBooks = _forceRefresh.switchMap {
             launchOnViewModelScope {
                 getReadingBooksUseCase.invoke(shouldFetch || it)

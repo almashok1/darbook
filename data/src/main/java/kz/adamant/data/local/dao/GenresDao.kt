@@ -12,7 +12,7 @@ interface GenresDao {
     @Query("SELECT * FROM genres_table WHERE genreId = :id")
     fun getGenreById(id: Int): Flow<GenreEntity?>
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateGenre(genre: GenreEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

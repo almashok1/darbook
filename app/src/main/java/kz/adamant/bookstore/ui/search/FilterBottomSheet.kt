@@ -12,6 +12,7 @@ import kz.adamant.bookstore.databinding.FragmentFilterBottomSheetBinding
 import kz.adamant.bookstore.ui.search.adapters.FilterDialogAdapter
 import kz.adamant.bookstore.utils.sharedGraphViewModel
 import kz.adamant.bookstore.viewmodels.SearchViewModel
+import kz.adamant.domain.models.Resource
 
 class FilterBottomSheet: BottomSheetDialogFragment() {
 
@@ -47,10 +48,13 @@ class FilterBottomSheet: BottomSheetDialogFragment() {
     }
 
     private fun observeVm() {
-        viewModel.genres.observe(viewLifecycleOwner) { result ->
-            binding.progressBar.show()
-            result.data?.let { adapter.setItems(it) }
-            binding.progressBar.hide()
+        viewModel.genres.observe(viewLifecycleOwner) { resource ->
+            when(resource) {
+                is Resource.Loading -> binding.progressBar.show()
+                is Resource.Error, is Resource.Success -> binding.progressBar.hide()
+                else -> {}
+            }
+            resource.data?.let { adapter.setItems(it) }
         }
     }
 

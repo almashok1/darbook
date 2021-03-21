@@ -74,7 +74,7 @@ val useCasesModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { HomeViewModel(get(), get(), get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { SearchViewModel(get(), get(), get()) }
     viewModel { BookDetailViewModel(get(), get()) }
     viewModel { BookScannerViewModel(get(), get()) }
